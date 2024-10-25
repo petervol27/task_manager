@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.core.validators import EmailValidator
+from django.core.exceptions import ValidationError
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import TaskUserSerializer
@@ -16,27 +17,19 @@ def get_users(request):
 
 
 @api_view(["POST"])
-def login(request):
-    username = request.data.get("username")
-    password = request.data.get("password")
-    user = authenticate(username=username, password=password)
-    if user is not None:
-        refresh = RefreshToken.for_user(user)
-        return Response(
-            {
-                "refresh": str(refresh),
-                "access": str(refresh.access_token),
-            },
-            status=status.HTTP_200_OK,
-        )
-    else:
-        return Response(
-            {"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED
-        )
+def register(request):
 
+    email = request.data["email"]
+    try:
+        EmailValidator()(email)
+    except ValidationError:
+        return Response("Email should be valid!!!")
 
-@api_view(["GET"])
-def fetch_user(request):
-    user = request.user
-    print(user)
-    return Response({"id": user.id, "username": user.username})
+    user = TaskUser.objects.create_user(
+        username=request.data["username"],
+        email=email,
+        password=request.data["password"],
+    )
+    user.is_active = True
+    user.save()
+    return Response("New user created")

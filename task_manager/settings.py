@@ -138,6 +138,3 @@ REST_FRAMEWORK = {
     ),
 }
 CORS_ALLOW_CREDENTIALS = True
-SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),  # Tokens expire after 5 minutes
-}
