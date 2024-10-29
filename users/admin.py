@@ -7,6 +7,13 @@ from django.contrib.auth.admin import UserAdmin
 
 class CustomUserAdmin(UserAdmin):
     model = TaskUser
+    fieldsets = UserAdmin.fieldsets + ((None, {"fields": ("fav_color", "phone")}),)
+    add_fieldsets = UserAdmin.add_fieldsets + (
+        (
+            None,
+            {"fields": ("fav_color", "phone")},
+        ),
+    )
     list_display = ["username", "fav_color", "phone"]
 
 
